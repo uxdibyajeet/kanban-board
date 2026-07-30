@@ -1,0 +1,75 @@
+@import url("https://fonts.googleapis.com/css2?family=Geist:ital,wght@0,100..900;1,100..900&display=swap");
+/* Box sizing */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+/* Remove default spacing */
+* {
+  margin: 0;
+  padding: 0;
+  font-size: 16px;
+  font-family: "Geist", sans-serif;
+}
+
+/* Better scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Body defaults */
+body {
+  min-height: 100vh;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Media */
+img,
+picture,
+video,
+canvas,
+svg {
+  display: block;
+  max-width: 100%;
+}
+
+/* Form elements inherit typography */
+input,
+button,
+textarea,
+select {
+  font: inherit;
+}
+
+/* Prevent text overflow */
+p,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  overflow-wrap: break-word;
+}
+
+/* Lists */
+ul,
+ol {
+  list-style: none;
+}
+
+/* Links */
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* Buttons */
+button {
+  background: none;
+  border: none;
+  cursor: pointer;
+}

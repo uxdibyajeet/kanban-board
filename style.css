@@ -1,0 +1,241 @@
+:root {
+  /* ----------------------------------------------------
+   * FONT SIZE TOKENS (rem)
+   * ---------------------------------------------------- */
+  --font-size-xs: 0.75rem; /* 12px */
+  --font-size-sm: 0.875rem; /* 14px */
+  --font-size-base: 1rem; /* 16px */
+  --font-size-lg: 1.125rem; /* 18px */
+  --font-size-xl: 1.25rem; /* 20px */
+  --font-size-2xl: 1.5rem; /* 24px */
+  --font-size-3xl: 1.875rem; /* 30px */
+  --font-size-4xl: 2.25rem; /* 36px */
+  --font-size-5xl: 3rem; /* 48px */
+
+  /* ----------------------------------------------------
+   * LINE HEIGHT TOKENS
+   * Strict line heights prevent vertical overflow in UI
+   * ---------------------------------------------------- */
+  --line-height-none: 1;
+  --line-height-tight: 1.25;
+  --line-height-snug: 1.375;
+  --line-height-normal: 1.5;
+  --line-height-relaxed: 1.625;
+
+  /* ----------------------------------------------------
+   * FONT WEIGHT TOKENS
+   * ---------------------------------------------------- */
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+
+  /* ----------------------------------------------------
+   * Corner Radius
+   * ---------------------------------------------------- */
+  --radius-s: 0.35rem;
+  --radius-m: 0.5rem;
+  --radius-l: 0.75rem;
+
+  /* ----------------------------------------------------- */
+  /* ----------------------------------------------------- */
+  /* ----------------------------------------------------
+   * Color TOKENS
+   * ---------------------------------------------------- */
+  /* Neutral: Slate */
+  --color-slate-50: oklch(0.98 0.005 240);
+  --color-slate-100: oklch(0.95 0.008 240);
+  --color-slate-200: oklch(0.9 0.012 240);
+  --color-slate-300: oklch(0.82 0.018 240);
+  --color-slate-400: oklch(0.7 0.022 240);
+  --color-slate-500: oklch(0.55 0.025 240);
+  --color-slate-600: oklch(0.45 0.028 240);
+  --color-slate-700: oklch(0.35 0.03 240);
+  --color-slate-800: oklch(0.25 0.028 240);
+  --color-slate-900: oklch(0.18 0.025 240);
+
+  /* Primary: Violet */
+  --color-violet-50: oklch(0.97 0.02 290);
+  --color-violet-100: oklch(0.93 0.05 290);
+  --color-violet-200: oklch(0.85 0.1 290);
+  --color-violet-300: oklch(0.75 0.16 290);
+  --color-violet-400: oklch(0.66 0.2 290);
+  --color-violet-500: oklch(0.6 0.22 290);
+  --color-violet-600: oklch(0.5 0.24 290);
+  --color-violet-700: oklch(0.42 0.22 290);
+  --color-violet-800: oklch(0.32 0.18 290);
+  --color-violet-900: oklch(0.24 0.13 290);
+
+  /* Info: Blue */
+  --color-blue-50: oklch(0.97 0.02 250);
+  --color-blue-100: oklch(0.93 0.04 250);
+  --color-blue-200: oklch(0.86 0.08 250);
+  --color-blue-500: oklch(0.6 0.21 250);
+  --color-blue-600: oklch(0.5 0.22 250);
+  --color-blue-700: oklch(0.42 0.2 250);
+
+  /* Success: Green */
+  --color-green-50: oklch(0.97 0.02 145); /* #f0fdf4 */
+  --color-green-100: oklch(0.93 0.05 145); /* #dcfce7 */
+  --color-green-500: oklch(0.62 0.19 145); /* #22c55e */
+  --color-green-600: oklch(0.52 0.19 145); /* #16a34a */
+  --color-green-700: oklch(0.42 0.16 145); /* #15803d */
+
+  /* Warning: Amber  */
+  --color-amber-50: oklch(0.98 0.03 75); /* #fffbeb */
+  --color-amber-100: oklch(0.94 0.07 75); /* #fef3c7 */
+  --color-amber-200: oklch(0.89 0.11 75); /* #fde68a */
+  --color-amber-300: oklch(0.83 0.15 75); /* #fcd34d */
+  --color-amber-400: oklch(0.77 0.17 75); /* #fbbf24 */
+  --color-amber-500: oklch(0.72 0.18 75); /* #f59e0b */
+  --color-amber-600: oklch(0.6 0.18 75); /* #d97706 */
+  --color-amber-700: oklch(0.48 0.15 75); /* #b45309 */
+
+  /* Destructive: Red */
+  --color-red-50: oklch(0.97 0.02 25); /* #fef2f2 */
+  --color-red-100: oklch(0.93 0.05 25); /* #fee2e2 */
+  --color-red-200: oklch(0.87 0.1 25); /* #fecaca */
+  --color-red-500: oklch(0.6 0.22 25); /* #ef4444 */
+  --color-red-600: oklch(0.5 0.22 25); /* #dc2626 */
+  --color-red-700: oklch(0.42 0.19 25); /* #b91c1c */
+
+  /* Base Constant Values */
+  --color-white: oklch(1 0 0);
+  --color-black: oklch(0 0 0);
+
+  /* ----------------------------------------------------- */
+  /* ----------------------------------------------------- */
+  /* ----------------------------------------------------
+   * Color Semantic TOKENS
+   * ---------------------------------------------------- */
+
+  /* shadows */
+  --button-shadow: 0 2px 4px oklch(0.25 0.028 240 / 50%);
+}
+
+/* Utility class */
+.hidden {
+  display: none !important;
+}
+
+/* page header */
+.page-header {
+  background-color: var(--color-slate-100);
+  border-bottom: 1px solid var(--color-amber-300);
+  padding: 1rem 4rem;
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  max-height: 84px;
+}
+
+.page-header h1 {
+  color: var(--color-slate-700);
+  font-size: var(--font-size-2xl);
+  line-height: var(--line-height-snug);
+  font-weight: var(--font-weight-bold);
+}
+
+.page-header p {
+  color: var(--color-slate-600);
+  font-size: var(--font-size-sm);
+  line-height: var(--line-height-relaxed);
+  text-transform: capitalize;
+}
+
+/* buttons */
+.btn {
+  border-radius: var(--radius-s);
+  font-size: var(--font-size-base);
+  line-height: var(--line-height-normal);
+  text-transform: capitalize;
+  height: 40px;
+}
+
+.btn-icon-only {
+  aspect-ratio: 1 / 1;
+  border-radius: var(--radius-s);
+  font-size: var(--font-size-base);
+  line-height: var(--line-height-normal);
+  text-transform: capitalize;
+  height: 40px;
+  width: 40px;
+}
+
+.primary {
+  color: var(--color-white);
+  background-color: var(--color-violet-600);
+  border: 2px solid var(--color-violet-400);
+  padding: 0.5rem 1rem;
+}
+
+.primary:hover {
+  background-color: var(--color-violet-500);
+  border: 2px solid var(--color-violet-300);
+  box-shadow: var(--button-shadow);
+}
+
+.secondary {
+  color: var(--color-violet-700);
+  background-color: var(--color-violet-50);
+  border: 2px solid var(--color-violet-200);
+  padding: 0.5rem 1rem;
+}
+
+/* board */
+.board {
+  background-color: var(--color-white);
+
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: clamp(0.5rem, 2vw + 0.25rem, 2rem);
+
+  padding: 2rem 4rem;
+}
+
+/* column */
+.column {
+  grid-column: span 1;
+  height: calc(calc(100vh - 4rem) - 84px);
+
+  border-radius: var(--radius-l);
+
+  background-color: var(--color-slate-100);
+  border: 1px solid var(--color-slate-300);
+
+  overflow: hidden;
+}
+
+.col-header {
+  background-color: var(--color-white);
+  border-bottom: 1px solid var(--color-slate-300);
+  padding: 0.5rem 1rem;
+  height: 48px;
+
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.col-header-text {
+  color: var(--color-slate-700);
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-semibold);
+  text-transform: capitalize;
+  line-height: var(--line-height-none);
+}
+
+/* Card */
+.card {
+  display: flex;
+  flex-direction: column;
+
+  background-color: var(--color-white);
+  border: 1px solid var(--color-slate-300);
+  border-radius: var(--radius-m);
+
+  padding: 0.35rem 0.75rem;
+  margin: 0.5rem;
+}

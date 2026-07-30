@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="reset.css" />
+    <title>Task Kanban</title>
+  </head>
+  <body>
+    <!-- page Header -->
+    <div class="page-header">
+      <div class="text-grp">
+        <h1>Tasks</h1>
+        <p>all your tasks in one place</p>
+      </div>
+      <button class="btn primary">add new task</button>
+    </div>
+
+    <!-- board -->
+    <div class="board">
+      <div class="column hidden">
+        <div class="col-header">
+          <h2 class="col-header-text">column header</h2>
+          <button class="btn-icon-only secondary hidden">+</button>
+        </div>
+        <div class="card">
+          <div>
+            <h3>Get Back To Studying</h3>
+            <p>
+              For a Kanban board, the status names depend on how detailed your
+              workflow is. Here are some common patterns.
+            </p>
+          </div>
+          <div>
+            <p>6 jul, 2026</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Add Form -->
+    <dialog></dialog>
+    <script src="script.js"></script>
+  </body>
+</html>
