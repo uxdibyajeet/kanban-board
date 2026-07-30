@@ -18,7 +18,15 @@ const generateColums = (() => {
   });
 })();
 
+// Add task modal
+const addTaskBtn = document.querySelector("#add-task");
+const addModal = document.querySelector("#add-modal");
+addTaskBtn.addEventListener("click", (event) => {
+  addModal.showModal();
+});
+
 // factor: create tasks
+let tasks = [];
 const createTasks = (title, details, duedate, priority) => {
   return [title, details, duedate, priority];
 };

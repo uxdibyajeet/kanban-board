@@ -31,7 +31,7 @@ img,
 picture,
 video,
 canvas,
-svg {
+svg:not([display="none"]):not([hidden]) {
   display: block;
   max-width: 100%;
 }
