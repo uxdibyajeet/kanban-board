@@ -141,10 +141,23 @@ const generateCard = () => {
         </svg>
         <p>${card.dueDate}</p>`;
       } else if (container.getAttribute("id") === "priority") {
-        container.innerHTML = `
-        <svg class="icon-sm" viewBox="0 0 24 24" fill="none">
-            <use href="#img-calendar"></use>
-        </svg>`;
+        const dotIndicator = document.createElement("span");
+        dotIndicator.setAttribute("class", "dot");
+        const label = document.createElement("p");
+
+        // semantic color change for the priority badge
+        if (card.priority === "high") {
+          dotIndicator.classList.add("high");
+          label.textContent = "high";
+        } else if (card.priority === "medium") {
+          dotIndicator.classList.add("medium");
+          label.textContent = "medium";
+        } else {
+          dotIndicator.classList.add("low");
+          label.textContent = "low";
+        }
+
+        container.append(dotIndicator, label);
       }
 
       metaDataDiv.appendChild(container);
@@ -169,4 +182,12 @@ const generateCard = () => {
       priorityBar.classList.add("low");
     }
   });
+};
+
+// append card to its respective status
+const appendCard = () => {
+  const cardContainer = document.querySelectorAll("#card-container");
+  cardContainer[0].innerHTML = "";
+
+  console.log(cardContainer);
 };
