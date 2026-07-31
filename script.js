@@ -26,19 +26,22 @@ const kanbanInit = (() => {
     const taskDueDate = addForm.elements["due_date"]?.value;
     const taskPriority = addForm.elements["task_priority"]?.value;
     const taskDescription = addForm.elements["task_description"]?.value;
+    const taskStatus = addForm.elements["task_status"]?.value;
 
     const newTask = createTasks(
       taskName,
       taskDescription,
       taskDueDate,
       taskPriority,
+      taskStatus,
     );
 
     tasks.push(newTask);
     addForm.reset();
     addModal.close();
     updateTotalTasksBadge();
-    generateCard();
+    // generateCard();
+    appendCard();
   };
 
   // event listners
@@ -112,82 +115,101 @@ const generateColums = (() => {
 })();
 
 // generate cards
-const generateCard = () => {
-  const cardArr = kanbanInit.getTasks();
-  const board = document.querySelector(".board");
-  const cardContainer = board.querySelectorAll("#card-container");
-  cardContainer[0].innerHTML = "";
+const generateCard = (task) => {
+  const cardBody = document.createElement("div");
+  const title = document.createElement("h3");
+  const desc = document.createElement("p");
+  const priorityBar = document.createElement("span");
 
-  cardArr.forEach((card) => {
-    const cardBody = document.createElement("div");
-    const title = document.createElement("h3");
-    const desc = document.createElement("p");
-    const priorityBar = document.createElement("span");
+  // meta data
+  const metaDataDiv = document.createElement("div"); //this container stores other data
+  metaDataDiv.setAttribute("class", "card-meta-data");
+  const metaData = ["priority", "dueDate"];
+  metaData.forEach((item) => {
+    const container = document.createElement("span");
 
-    // meta data
-    const metaDataDiv = document.createElement("div"); //this container stores other data
-    metaDataDiv.setAttribute("class", "card-meta-data");
-    const metaData = ["priority", "dueDate"];
-    metaData.forEach((item) => {
-      const container = document.createElement("span");
+    container.setAttribute("class", item);
+    container.setAttribute("id", item);
 
-      container.setAttribute("class", item);
-      container.setAttribute("id", item);
-
-      if (container.getAttribute("id") === "dueDate") {
-        container.innerHTML = `
+    if (container.getAttribute("id") === "dueDate") {
+      container.innerHTML = `
         <svg class="icon-sm" viewBox="0 0 24 24" fill="none">
             <use href="#img-calendar"></use>
         </svg>
-        <p>${card.dueDate}</p>`;
-      } else if (container.getAttribute("id") === "priority") {
-        const dotIndicator = document.createElement("span");
-        dotIndicator.setAttribute("class", "dot");
-        const label = document.createElement("p");
+        <p>${task.dueDate}</p>`;
+    } else if (container.getAttribute("id") === "priority") {
+      const dotIndicator = document.createElement("span");
+      dotIndicator.setAttribute("class", "dot");
+      const label = document.createElement("p");
 
-        // semantic color change for the priority badge
-        if (card.priority === "high") {
-          dotIndicator.classList.add("high");
-          label.textContent = "high";
-        } else if (card.priority === "medium") {
-          dotIndicator.classList.add("medium");
-          label.textContent = "medium";
-        } else {
-          dotIndicator.classList.add("low");
-          label.textContent = "low";
-        }
-
-        container.append(dotIndicator, label);
+      // semantic color change for the priority badge
+      if (task.priority === "high") {
+        dotIndicator.classList.add("high");
+        label.textContent = "high";
+      } else if (task.priority === "medium") {
+        dotIndicator.classList.add("medium");
+        label.textContent = "medium";
+      } else {
+        dotIndicator.classList.add("low");
+        label.textContent = "low";
       }
 
-      metaDataDiv.appendChild(container);
-    });
+      container.append(dotIndicator, label);
+    }
 
-    title.textContent = card.title;
-    desc.textContent = card.details;
+    metaDataDiv.appendChild(container);
+
+    title.textContent = task.title;
+    desc.textContent = task.details;
 
     cardBody.append(title, desc, priorityBar, metaDataDiv);
 
     // adding classes
     cardBody.setAttribute("class", "card");
     priorityBar.setAttribute("class", "priority-bar");
-    cardContainer[0].appendChild(cardBody);
 
     // adding utility class to indicate task priority
-    if (card.priority === "high") {
+    if (task.priority === "high") {
       priorityBar.classList.add("high");
-    } else if (card.priority === "medium") {
+    } else if (task.priority === "medium") {
       priorityBar.classList.add("medium");
     } else {
       priorityBar.classList.add("low");
     }
   });
+
+  return cardBody;
 };
 
 // append card to its respective status
 const appendCard = () => {
+  const tasksCreated = kanbanInit.getTasks();
+  const names = ["backlogs", "to_dos", "in_progress", "done"];
   const cardContainer = document.querySelectorAll("#card-container");
-  cardContainer[0].innerHTML = "";
 
-  console.log(cardContainer);
+  // assigning names to card containers with "data-*"
+  cardContainer.forEach((container, i) => {
+    container.innerHTML = "";
+    if (names[i]) {
+      container.dataset.name = names[i];
+    }
+
+    // console.log(container.dataset.name);
+  });
+
+  // append card to a perticular column via "data-name"
+  tasksCreated.forEach((task) => {
+    const matchedContainer = Array.from(cardContainer).find((container) => {
+      return container.dataset.name == task.stage;
+    });
+
+    // const matchedContainer = Array.from(cardContainer).find(
+    //   (container) => container,
+    // );
+    if (matchedContainer) {
+      const card = generateCard(task);
+      matchedContainer.appendChild(card);
+    }
+    console.log(matchedContainer); // undefined?
+  });
 };

@@ -157,6 +157,15 @@
           </p>
         </div>
         <p class="field">
+          <label for="task_status">status</label>
+          <select id="task_status" name="task_status">
+            <option value="backlogs">backlogs</option>
+            <option value="to_dos" selected>to dos</option>
+            <option value="in_progress">in progress</option>
+            <option value="done">done</option>
+          </select>
+        </p>
+        <p class="field">
           <label for="task_description">task description</label>
           <textarea id="task_description" rows="5" cols="5">
 A short task description goes here...</textarea
