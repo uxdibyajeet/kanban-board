@@ -1,8 +1,14 @@
 const kanbanInit = (() => {
   // factor: create tasks
   let tasks = [];
-  const createTasks = (title, details, duedate, priority) => {
-    return { title, details, duedate, priority };
+  const createTasks = (title, details, dueDate, priority, stage) => {
+    return {
+      title,
+      details,
+      dueDate: dueDate || "no due date",
+      priority,
+      stage,
+    };
   };
 
   // get tasks
@@ -118,10 +124,36 @@ const generateCard = () => {
     const desc = document.createElement("p");
     const priorityBar = document.createElement("span");
 
+    // meta data
+    const metaDataDiv = document.createElement("div"); //this container stores other data
+    metaDataDiv.setAttribute("class", "card-meta-data");
+    const metaData = ["priority", "dueDate"];
+    metaData.forEach((item) => {
+      const container = document.createElement("span");
+
+      container.setAttribute("class", item);
+      container.setAttribute("id", item);
+
+      if (container.getAttribute("id") === "dueDate") {
+        container.innerHTML = `
+        <svg class="icon-sm" viewBox="0 0 24 24" fill="none">
+            <use href="#img-calendar"></use>
+        </svg>
+        <p>${card.dueDate}</p>`;
+      } else if (container.getAttribute("id") === "priority") {
+        container.innerHTML = `
+        <svg class="icon-sm" viewBox="0 0 24 24" fill="none">
+            <use href="#img-calendar"></use>
+        </svg>`;
+      }
+
+      metaDataDiv.appendChild(container);
+    });
+
     title.textContent = card.title;
     desc.textContent = card.details;
 
-    cardBody.append(title, desc, priorityBar);
+    cardBody.append(title, desc, priorityBar, metaDataDiv);
 
     // adding classes
     cardBody.setAttribute("class", "card");
