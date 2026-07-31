@@ -43,6 +43,10 @@
   /* ----------------------------------------------------
    * Color TOKENS
    * ---------------------------------------------------- */
+
+  /* alphas */
+  --color-slate-700-alpha: oklch(0.35 0.03 240 / 40%);
+
   /* Neutral: Slate */
   --color-slate-50: oklch(0.98 0.005 240);
   --color-slate-100: oklch(0.95 0.008 240);
@@ -71,6 +75,7 @@
   --color-blue-50: oklch(0.97 0.02 250);
   --color-blue-100: oklch(0.93 0.04 250);
   --color-blue-200: oklch(0.86 0.08 250);
+  --color-blue-300: oklch(0.77 0.123 250);
   --color-blue-500: oklch(0.6 0.21 250);
   --color-blue-600: oklch(0.5 0.22 250);
   --color-blue-700: oklch(0.42 0.2 250);
@@ -95,6 +100,7 @@
   /* Destructive: Red */
   --color-red-50: oklch(0.97 0.02 25); /* #fef2f2 */
   --color-red-100: oklch(0.93 0.05 25); /* #fee2e2 */
+  --color-red-300: oklch(0.8 0.14 25); /* #fca5a5 */
   --color-red-200: oklch(0.87 0.1 25); /* #fecaca */
   --color-red-500: oklch(0.6 0.22 25); /* #ef4444 */
   --color-red-600: oklch(0.5 0.22 25); /* #dc2626 */
@@ -111,7 +117,7 @@
    * ---------------------------------------------------- */
 
   /* shadows */
-  --button-shadow: 0 2px 4px oklch(0.25 0.028 240 / 50%);
+  --button-shadow: 0 2px 4px oklch(0.25 0.028 240 / 20%);
 }
 
 /* Utility class */
@@ -160,6 +166,11 @@
   height: 40px;
 }
 
+.small {
+  width: 32px;
+  height: 32px;
+}
+
 .icon {
   width: 24px;
   height: 24px;
@@ -173,8 +184,7 @@
   font-size: var(--font-size-base);
   line-height: var(--line-height-normal);
   text-transform: capitalize;
-  height: 40px;
-  width: 40px;
+  padding: 0 !important;
 }
 
 .primary {
@@ -195,6 +205,23 @@
   background-color: var(--color-violet-50);
   border: 2px solid var(--color-violet-200);
   padding: 0.5rem 1rem;
+}
+
+.secondary:hover {
+  background-color: var(--color-violet-100);
+  border: 2px solid var(--color-violet-300);
+}
+
+.danger {
+  color: var(--color-red-700);
+  background-color: var(--color-red-50);
+  border: 2px solid var(--color-red-200);
+  padding: 0.5rem 1rem;
+}
+
+.danger:hover {
+  background-color: var(--color-red-100);
+  border: 2px solid var(--color-red-300);
 }
 
 /* board */
@@ -230,6 +257,9 @@
   display: flex;
   flex-direction: row;
   align-items: center;
+  justify-content: space-between;
+
+  z-index: 10;
 }
 
 .col-header-text {
@@ -240,8 +270,14 @@
   line-height: var(--line-height-none);
 }
 
+.card-container {
+  padding: 0.5rem;
+  overflow-y: scroll;
+  height: 100%;
+}
 /* Card */
 .card {
+  position: relative;
   display: flex;
   flex-direction: column;
 
@@ -249,8 +285,60 @@
   border: 1px solid var(--color-slate-300);
   border-radius: var(--radius-m);
 
-  padding: 0.35rem 0.75rem;
-  margin: 0.5rem;
+  padding: 0.5rem 0.75rem 0.5rem 1.25rem;
+  margin-bottom: 0.5rem;
+
+  overflow: hidden;
+}
+
+.priority-bar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: 0.5rem;
+  height: 100%;
+
+  z-index: 5;
+}
+
+/* priority bar semantic color utils */
+.high {
+  background-color: var(--color-amber-500);
+}
+
+.medium {
+  background-color: var(--color-amber-300);
+}
+
+.low {
+  background-color: var(--color-amber-100);
+}
+
+.card h3 {
+  font-size: var(--font-size-lg);
+  color: var(--color-slate-700);
+  line-height: var(--line-height-snug);
+  font-weight: var(--font-weight-semibold);
+}
+
+.card p {
+  font-size: var(--font-size-base);
+  color: var(--color-slate-600);
+  line-height: var(--line-height-normal);
+}
+
+/* Info Badge */
+.info-badge {
+  background-color: var(--color-blue-50);
+  border: 1px solid var(--color-blue-300);
+  color: var(--color-blue-700);
+  border-radius: var(--radius-m);
+  margin-left: 0.5rem;
+
+  font-size: var(--font-size-lg);
+
+  padding: 0.15rem 0.5rem;
 }
 
 /* Add modal */
@@ -268,6 +356,11 @@
   overflow: hidden;
 }
 
+.add-modal::backdrop {
+  background-color: var(--color-slate-700-alpha);
+  backdrop-filter: blur(0.25rem);
+}
+
 .modal-header {
   display: flex;
   flex-direction: row;
@@ -276,6 +369,7 @@
 
   padding: 0.75rem 1.5rem;
   background-color: var(--color-slate-100);
+  border-bottom: 1px solid var(--color-slate-300);
 
   height: 48px;
 }

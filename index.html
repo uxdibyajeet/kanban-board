@@ -112,15 +112,10 @@
     <!-- page Header -->
     <div class="page-header">
       <div class="text-grp">
-        <h1>Tasks</h1>
+        <h1>Tasks<span id="count-badge"></span></h1>
         <p>all your tasks in one place</p>
       </div>
-      <button class="btn primary" id="add-task">
-        <svg class="icon" viewBox="0 0 24 24" fill="none">
-          <use href="#img-plus"></use>
-        </svg>
-        <span>add new task</span>
-      </button>
+      <button class="btn primary" id="add-task">add new task</button>
     </div>
 
     <!-- board -->
@@ -149,27 +144,31 @@
     <dialog class="add-modal" id="add-modal">
       <div class="modal-header">
         <h2>Add Task</h2>
-        <button class="btn">close</button>
+        <button class="btn danger btn-icon-only small" id="close-add-modal">
+          <svg class="icon" viewBox="0 0 24 24" fill="none">
+            <use href="#img-x-close"></use>
+          </svg>
+        </button>
       </div>
-      <form action="#" method="post" class="modal-body">
+      <form action="#" method="post" id="add-form" class="modal-body">
         <p class="field">
-          <label for="task-name">task name</label>
+          <label for="task_name">task name</label>
           <input
             type="text"
-            id="task-name"
-            name="task-name"
+            id="task_name"
+            name="task_name"
             placeholder="A cool task name..."
             required
           />
         </p>
         <div class="input-row">
           <p class="field">
-            <label for="due-date">due date</label>
-            <input type="date" id="due-date" name="due-date" />
+            <label for="due_date">due date</label>
+            <input type="date" id="due_date" name="due_date" />
           </p>
           <p class="field">
-            <label for="task-priority">priority</label>
-            <select id="task-priority" name="task-priority">
+            <label for="task_priority">priority</label>
+            <select id="task_priority" name="task_priority">
               <option value="high">high</option>
               <option value="medium" selected>medium</option>
               <option value="low">low</option>
@@ -177,8 +176,8 @@
           </p>
         </div>
         <p class="field">
-          <label for="task-description">task description</label>
-          <textarea id="task-description" rows="5" cols="5">
+          <label for="task_description">task description</label>
+          <textarea id="task_description" rows="5" cols="5">
 A short task description goes here...</textarea
           >
         </p>
