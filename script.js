@@ -16,6 +16,30 @@ const kanbanInit = (() => {
     return tasks;
   };
 
+  // localStorage and JSON helper function
+  const saveToStorage = () => {
+    localStorage.setItem("kanban_tasks", JSON.stringify(tasks));
+  };
+
+  const loadInitalData = async () => {
+    const savedData = localStorage.getItem("kanban_tasks");
+
+    if (savedData) {
+      // if data exists in localStorage
+      tasks = JSON.parse(savedData);
+    } else {
+      //else, fetch from tasks.json
+      try {
+        const response = await fetch("./tasks.json");
+        tasks = await response.json();
+        saveToStorage(); // initial data to localStorage
+      } catch (error) {
+        console.error("Could not load tasks.json", error);
+        tasks = []; //fallback to empty array
+      }
+    }
+  };
+
   // adds task add form
   const addForm = document.querySelector("#add-form");
 
@@ -37,24 +61,25 @@ const kanbanInit = (() => {
     );
 
     tasks.push(newTask);
+    saveToStorage();
+
     addForm.reset();
     addModal.close();
-    updateTotalTasksBadge();
-    // generateCard();
+    updateBadges();
     appendCard();
   };
 
   // event listners
   addForm.addEventListener("submit", addTask);
 
-  return { createTasks, addForm, getTasks };
+  return { createTasks, addForm, getTasks, loadInitalData };
 })();
 
-const updateTotalTasksBadge = () => {
-  const badge = document.querySelector("#count-badge");
+const updateBadges = () => {
+  const totalTaskBadge = document.querySelector("#count-badge");
   const totalTasks = kanbanInit.getTasks().length;
-  badge.setAttribute("class", "info-badge");
-  badge.textContent = totalTasks;
+  totalTaskBadge.setAttribute("class", "info-badge");
+  totalTaskBadge.textContent = totalTasks;
 };
 
 // Add task modal
@@ -82,7 +107,7 @@ const generateColums = (() => {
     const colName = document.createElement("h2");
     const btn = document.createElement("button");
     const cardContainer = document.createElement("div");
-    // const badge = document.createElement("span");
+    const badge = document.createElement("span");
 
     colName.textContent = col;
 
@@ -94,8 +119,8 @@ const generateColums = (() => {
 
     btn.classList.add("btn", "secondary", "btn-icon-only", "small", "hidden");
     colName.setAttribute("class", "col-header-text");
-    // badge.setAttribute("class", "info-badge");
-    // colName.appendChild(badge);
+    badge.setAttribute("class", "info-badge");
+    colName.appendChild(badge);
     colHeader.setAttribute("class", "col-header");
     colHeader.append(colName, btn);
     column.setAttribute("class", "column");
@@ -206,3 +231,12 @@ const appendCard = () => {
     }
   });
 };
+
+// initialize app on page load
+const initApp = async () => {
+  await kanbanInit.loadInitalData();
+  updateBadges();
+  appendCard();
+};
+
+initApp();

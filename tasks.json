@@ -1,0 +1,9 @@
+[
+  {
+    "title": "Welcome Task",
+    "details": "This is a starter task loaded from tasks.json!",
+    "dueDate": "2026-08-01",
+    "priority": "low",
+    "stage": "backlogs"
+  }
+]
