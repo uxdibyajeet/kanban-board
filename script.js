@@ -99,7 +99,6 @@ const generateColums = (() => {
     colHeader.setAttribute("class", "col-header");
     colHeader.append(colName, btn);
     column.setAttribute("class", "column");
-    cardContainer.setAttribute("id", "card-container");
     cardContainer.setAttribute("class", "card-container");
 
     column.append(colHeader, cardContainer);
@@ -159,11 +158,6 @@ const generateCard = (task) => {
 
     metaDataDiv.appendChild(container);
 
-    title.textContent = task.title;
-    desc.textContent = task.details;
-
-    cardBody.append(title, desc, priorityBar, metaDataDiv);
-
     // adding classes
     cardBody.setAttribute("class", "card");
     priorityBar.setAttribute("class", "priority-bar");
@@ -178,6 +172,11 @@ const generateCard = (task) => {
     }
   });
 
+  title.textContent = task.title;
+  desc.textContent = task.details;
+
+  cardBody.append(title, desc, priorityBar, metaDataDiv);
+
   return cardBody;
 };
 
@@ -185,7 +184,7 @@ const generateCard = (task) => {
 const appendCard = () => {
   const tasksCreated = kanbanInit.getTasks();
   const names = ["backlogs", "to_dos", "in_progress", "done"];
-  const cardContainer = document.querySelectorAll("#card-container");
+  const cardContainer = document.querySelectorAll(".card-container");
 
   // assigning names to card containers with "data-*"
   cardContainer.forEach((container, i) => {
@@ -193,8 +192,6 @@ const appendCard = () => {
     if (names[i]) {
       container.dataset.name = names[i];
     }
-
-    // console.log(container.dataset.name);
   });
 
   // append card to a perticular column via "data-name"
@@ -203,13 +200,9 @@ const appendCard = () => {
       return container.dataset.name == task.stage;
     });
 
-    // const matchedContainer = Array.from(cardContainer).find(
-    //   (container) => container,
-    // );
     if (matchedContainer) {
       const card = generateCard(task);
       matchedContainer.appendChild(card);
     }
-    console.log(matchedContainer); // undefined?
   });
 };

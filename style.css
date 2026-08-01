@@ -286,7 +286,7 @@
 
 .card-container {
   padding: 0.5rem;
-  overflow-y: scroll;
+  overflow-y: auto;
   height: 100%;
 }
 /* Card */
@@ -442,7 +442,7 @@
   text-transform: capitalize;
 }
 
-.field input,
+input,
 select,
 textarea {
   padding: 0.5rem 0.75rem;
@@ -454,8 +454,8 @@ textarea {
   color: var(--color-slate-600);
 }
 
-.field input,
-select {
+select,
+input {
   height: 40px;
 }
 
