@@ -3,6 +3,7 @@ const kanbanInit = (() => {
   let tasks = [];
   const createTasks = (title, details, dueDate, priority, stage) => {
     return {
+      id: crypto.randomUUID(),
       title,
       details,
       dueDate: dueDate || "no due date",
@@ -40,6 +41,13 @@ const kanbanInit = (() => {
     }
   };
 
+  // Delete function
+  const deleteTask = (taskId) => {
+    tasks = tasks.filter((task) => task.id !== taskId);
+    saveToStorage();
+    appendCard();
+  };
+
   // adds task add form
   const addForm = document.querySelector("#add-form");
 
@@ -72,7 +80,7 @@ const kanbanInit = (() => {
   // event listners
   addForm.addEventListener("submit", addTask);
 
-  return { createTasks, addForm, getTasks, loadInitalData };
+  return { createTasks, addForm, getTasks, loadInitalData, deleteTask };
 })();
 
 const updateBadges = () => {
@@ -149,7 +157,14 @@ const generateColums = (() => {
             <use href="#img-plus"></use>
         </svg>`;
 
-    btn.classList.add("btn", "secondary", "btn-icon-only", "small", "hidden");
+    btn.classList.add(
+      "btn",
+      "secondary",
+      "btn-icon-only",
+      "small",
+      "hidden",
+      "add-to-col",
+    );
     colName.setAttribute("class", "col-header-text");
     colHeader.setAttribute("class", "col-header");
     colHeader.append(colName, btn);
@@ -174,6 +189,37 @@ const generateCard = (task) => {
   const title = document.createElement("h3");
   const desc = document.createElement("p");
   const priorityBar = document.createElement("span");
+
+  // add detaset to identify card
+  cardBody.dataset.id = task.id;
+
+  // card actions
+  const cardActionBtn = document.createElement("button");
+  cardActionBtn.setAttribute("aria-expanded", "false");
+  cardActionBtn.classList.add(
+    "btn",
+    "secondary",
+    "btn-icon-only",
+    "extra-small",
+    "card-action-position",
+    "action-btn",
+  );
+  cardActionBtn.innerHTML = `
+    <svg class="icon-sm" viewBox="0 0 24 24" fill="none">
+        <use href="#img-dots-horizontal"></use>
+    </svg>`;
+
+  // del
+  const deleteBtn = document.createElement("button");
+  deleteBtn.classList.add("btn", "extra-small", "secondary", "btn-icon-only");
+  deleteBtn.innerHTML = `
+    <svg class="icon-sm" viewBox="0 0 24 24" fill="none">
+        <use href="#img-trash-02"></use>
+    </svg>`;
+
+  // deleteBtn.addEventListener("click", () => {
+  //   kanbanInit.deleteTask(task.id);
+  // });
 
   // meta data
   const metaDataDiv = document.createElement("div"); //this container stores other data
@@ -230,9 +276,82 @@ const generateCard = (task) => {
   title.textContent = task.title;
   desc.textContent = task.details;
 
-  cardBody.append(title, desc, priorityBar, metaDataDiv);
+  cardBody.append(cardActionBtn, title, desc, priorityBar, metaDataDiv);
 
   return cardBody;
+};
+
+// eventlistner on the board
+let activeDropdown = null;
+const board = document.querySelector(".board");
+board.addEventListener("click", (event) => {
+  const actionBtn = event.target.closest(".action-btn");
+  const addBtn = event.target.closest(".add-to-col");
+  const priority = event.target.closest(".priority");
+
+  if (actionBtn) {
+    const isExpanded = actionBtn.getAttribute("aria-expanded") === "true";
+
+    // Close any currently open floating menu
+    if (activeDropdown) {
+      activeDropdown.remove();
+      activeDropdown = null;
+    }
+
+    if (!isExpanded) {
+      actionBtn.setAttribute("aria-expanded", "true");
+
+      const menu = actionDropDown(actionBtn);
+      document.body.appendChild(menu);
+
+      activeDropdown = menu;
+    } else {
+      actionBtn.setAttribute("aria-expanded", "false");
+    }
+  } else if (addBtn) {
+    alert("add to column");
+  } else if (priority) {
+    alert("priority");
+  }
+});
+
+// Close floating dropdown when clicking anywhere outside
+document.addEventListener("click", (e) => {
+  if (!e.target.closest(".action-btn") && activeDropdown) {
+    activeDropdown.remove();
+    activeDropdown = null;
+
+    // Reset state on action buttons
+    document
+      .querySelectorAll(".action-btn[aria-expanded='true']")
+      .forEach((btn) => {
+        btn.setAttribute("aria-expanded", "false");
+      });
+  }
+});
+
+// create Card action > list UI
+const actionDropDown = (button) => {
+  const options = ["Edit", "View Details", "Delete"];
+  const dropDown = document.createElement("ul");
+  dropDown.className = "dropdown-menu floating-dropdown";
+
+  options.forEach((option) => {
+    const li = document.createElement("li");
+    li.textContent = option;
+    dropDown.appendChild(li);
+  });
+
+  // Calculate coordinates relative to viewport
+  const rect = button.getBoundingClientRect();
+
+  // Position relative to button (bottom-left alignment)
+  dropDown.style.position = "fixed";
+  dropDown.style.top = `${rect.bottom + window.scrollY}px`;
+  dropDown.style.left = `${rect.left + window.scrollX}px`;
+  dropDown.style.zIndex = "9999";
+
+  return dropDown;
 };
 
 // append card to its respective status

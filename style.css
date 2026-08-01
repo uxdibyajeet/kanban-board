@@ -192,6 +192,11 @@
   height: 32px;
 }
 
+.extra-small {
+  width: 24px;
+  height: 24px;
+}
+
 .btn-icon-only {
   aspect-ratio: 1 / 1;
   border-radius: var(--radius-s);
@@ -236,6 +241,24 @@
 .danger:hover {
   background-color: var(--color-red-100);
   border: 2px solid var(--color-red-300);
+}
+
+.card-action-position {
+  position: absolute;
+  right: 0.35rem;
+  top: 0.35rem;
+}
+
+/* handling hover show/hide of card action */
+.card .action-btn {
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.2 ease;
+}
+
+.card:hover .action-btn {
+  opacity: 1;
+  visibility: visible;
 }
 
 /* board */
@@ -314,6 +337,10 @@
   height: 100%;
 
   z-index: 5;
+}
+
+.priority {
+  cursor: pointer;
 }
 
 .card-meta-data {
@@ -464,4 +491,29 @@ input {
   flex-direction: row;
   justify-content: space-between;
   gap: 1.5rem;
+}
+
+/* Drop down */
+
+.floating-dropdown {
+  list-style: none;
+  margin: 0;
+  padding: 0.5rem 0;
+  background-color: var(--surface-bg, #ffffff);
+  border: 1px solid var(--border-color, #e2e8f0);
+  border-radius: 8px;
+  box-shadow:
+    0 10px 15px -3px rgba(0, 0, 0, 0.1),
+    0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  min-width: 140px;
+}
+
+.floating-dropdown li {
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  font-size: 0.875rem;
+}
+
+.floating-dropdown li:hover {
+  background-color: var(--hover-bg, #f1f5f9);
 }
