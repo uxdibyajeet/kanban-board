@@ -53,6 +53,15 @@ const kanbanInit = (() => {
     saveToStorage();
   };
 
+  // NEW: Update a task's stage after drag-and-drop
+  const moveTask = (taskId, newStage) => {
+    const task = tasks.find((t) => t.id === taskId);
+    if (task && task.stage !== newStage) {
+      task.stage = newStage;
+      saveToStorage();
+    }
+  };
+
   const addForm = document.querySelector("#add-form");
 
   const addTask = (event) => {
@@ -64,7 +73,6 @@ const kanbanInit = (() => {
     const taskDescription = addForm.elements["task_description"]?.value;
     const taskStatus = addForm.elements["task_status"]?.value;
 
-    // Basic validation
     if (!taskName) {
       alert("Task name is required.");
       return;
@@ -103,7 +111,14 @@ const kanbanInit = (() => {
     });
   }
 
-  return { createTasks, addForm, getTasks, loadInitialData, deleteTask };
+  return {
+    createTasks,
+    addForm,
+    getTasks,
+    loadInitialData,
+    deleteTask,
+    moveTask,
+  };
 })();
 
 // SVG Helper
@@ -231,7 +246,7 @@ const generateCard = (task) => {
   return cardBody;
 };
 
-// Efficient single-card operations (no more full re-renders for simple actions)
+// Efficient single-card operations
 const insertSingleCard = (task) => {
   const container = document.querySelector(
     `.card-container[data-name="${task.stage}"]`,
@@ -282,7 +297,7 @@ const updateBadges = () => {
   });
 };
 
-// Full re-render (only used for initial load now)
+// Full re-render (only used for initial load)
 const appendCard = () => {
   const tasksCreated = kanbanInit.getTasks();
   const cardContainers = document.querySelectorAll(".card-container");
@@ -300,6 +315,44 @@ const appendCard = () => {
       const card = generateCard(task);
       matchedContainer.appendChild(card);
     }
+  });
+};
+
+// ═══════════════════════════════════════════════════════════
+// DRAG AND DROP — SortableJS
+// ═══════════════════════════════════════════════════════════
+
+const initSortable = () => {
+  // Guard: bail if SortableJS isn't loaded (e.g. CDN failed)
+  if (typeof Sortable === "undefined") {
+    console.warn("SortableJS not loaded. Drag and drop disabled.");
+    return;
+  }
+
+  const containers = document.querySelectorAll(".card-container");
+
+  containers.forEach((container) => {
+    new Sortable(container, {
+      group: "kanban", // Allows dragging between columns
+      animation: 150, // Smooth slide animation (ms)
+      ghostClass: "dragging", // CSS class while dragging
+      delay: 0,
+      delayOnTouchOnly: true, // Only delay on touch devices
+      touchStartThreshold: 5,
+
+      onEnd: (evt) => {
+        const card = evt.item;
+        const taskId = card.dataset.id;
+        const newStage = evt.to.dataset.name; // Destination column
+        const oldStage = evt.from.dataset.name; // Source column
+
+        // Only update if the card actually moved to a different column
+        if (newStage !== oldStage && taskId) {
+          kanbanInit.moveTask(taskId, newStage);
+          updateBadges();
+        }
+      },
+    });
   });
 };
 
@@ -427,6 +480,7 @@ const initApp = async () => {
   await kanbanInit.loadInitialData();
   appendCard();
   updateBadges();
+  initSortable(); // Fire up drag and drop after cards are on the board
 };
 
 initApp();
