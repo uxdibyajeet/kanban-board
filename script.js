@@ -76,10 +76,43 @@ const kanbanInit = (() => {
 })();
 
 const updateBadges = () => {
-  const totalTaskBadge = document.querySelector("#count-badge");
-  const totalTasks = kanbanInit.getTasks().length;
-  totalTaskBadge.setAttribute("class", "info-badge");
-  totalTaskBadge.textContent = totalTasks;
+  const allTasks = kanbanInit.getTasks();
+
+  // 1. UPDATE PAGE TITLE (Total count)
+  const pageTitle = document.querySelector("#page-title");
+  if (pageTitle) {
+    let pageBadge = pageTitle.querySelector(".info-badge");
+    if (!pageBadge) {
+      pageBadge = document.createElement("span");
+      pageBadge.setAttribute("class", "info-badge");
+      pageTitle.appendChild(pageBadge);
+    }
+    pageBadge.textContent = allTasks.length; // Total tasks[cite: 1]
+  }
+
+  // 2. UPDATE COLUMN HEADERS (Stage-specific counts)
+  // Target card containers directly since they ALREADY have data-name set![cite: 1]
+  const cardContainers = document.querySelectorAll(".card-container");
+
+  cardContainers.forEach((container) => {
+    const stageName = container.dataset.name;
+
+    const column = container.closest(".column");
+    const colHeader = column?.querySelector(".col-header-text");
+
+    if (colHeader && stageName) {
+      const count = allTasks.filter((task) => task.stage === stageName).length;
+
+      let badge = colHeader.querySelector(".info-badge");
+      if (!badge) {
+        badge = document.createElement("span");
+        badge.setAttribute("class", "info-badge");
+        colHeader.appendChild(badge);
+      }
+
+      badge.textContent = count;
+    }
+  });
 };
 
 // Add task modal
@@ -107,7 +140,6 @@ const generateColums = (() => {
     const colName = document.createElement("h2");
     const btn = document.createElement("button");
     const cardContainer = document.createElement("div");
-    const badge = document.createElement("span");
 
     colName.textContent = col;
 
@@ -119,8 +151,6 @@ const generateColums = (() => {
 
     btn.classList.add("btn", "secondary", "btn-icon-only", "small", "hidden");
     colName.setAttribute("class", "col-header-text");
-    badge.setAttribute("class", "info-badge");
-    colName.appendChild(badge);
     colHeader.setAttribute("class", "col-header");
     colHeader.append(colName, btn);
     column.setAttribute("class", "column");
@@ -166,7 +196,7 @@ const generateCard = (task) => {
       dotIndicator.setAttribute("class", "dot");
       const label = document.createElement("p");
 
-      // semantic color change for the priority badge
+      // semantic color change for the priority tag
       if (task.priority === "high") {
         dotIndicator.classList.add("high");
         label.textContent = "high";
@@ -230,6 +260,7 @@ const appendCard = () => {
       matchedContainer.appendChild(card);
     }
   });
+  updateBadges();
 };
 
 // initialize app on page load
