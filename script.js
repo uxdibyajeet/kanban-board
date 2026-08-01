@@ -22,10 +22,23 @@ const kanbanInit = (() => {
     const savedData = localStorage.getItem("kanban_tasks");
 
     if (savedData) {
-      tasks = JSON.parse(savedData);
+      try {
+        tasks = JSON.parse(savedData);
+      } catch (error) {
+        console.error("Corrupted localStorage data, clearing...", error);
+        localStorage.removeItem("kanban_tasks");
+        tasks = [];
+      }
     } else {
       try {
         const response = await fetch("./tasks.json");
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const contentType = response.headers.get("content-type");
+        if (!contentType || !contentType.includes("application/json")) {
+          throw new Error("Response is not valid JSON");
+        }
         tasks = await response.json();
         saveToStorage();
       } catch (error) {
@@ -38,8 +51,6 @@ const kanbanInit = (() => {
   const deleteTask = (taskId) => {
     tasks = tasks.filter((task) => task.id !== taskId);
     saveToStorage();
-    appendCard();
-    updateBadges();
   };
 
   const addForm = document.querySelector("#add-form");
@@ -47,11 +58,23 @@ const kanbanInit = (() => {
   const addTask = (event) => {
     event.preventDefault();
 
-    const taskName = addForm.elements["task_name"]?.value;
+    const taskName = addForm.elements["task_name"]?.value.trim();
     const taskDueDate = addForm.elements["due_date"]?.value;
     const taskPriority = addForm.elements["task_priority"]?.value;
     const taskDescription = addForm.elements["task_description"]?.value;
     const taskStatus = addForm.elements["task_status"]?.value;
+
+    // Basic validation
+    if (!taskName) {
+      alert("Task name is required.");
+      return;
+    }
+
+    const validPriorities = ["low", "medium", "high"];
+    if (!validPriorities.includes(taskPriority)) {
+      console.error("Invalid priority:", taskPriority);
+      return;
+    }
 
     const newTask = createTasks(
       taskName,
@@ -66,12 +89,18 @@ const kanbanInit = (() => {
 
     addForm.reset();
     addModal.close();
-    appendCard();
-    updateBadges();
+
+    return newTask;
   };
 
   if (addForm) {
-    addForm.addEventListener("submit", addTask);
+    addForm.addEventListener("submit", (event) => {
+      const newTask = addTask(event);
+      if (newTask) {
+        insertSingleCard(newTask);
+        updateBadges();
+      }
+    });
   }
 
   return { createTasks, addForm, getTasks, loadInitialData, deleteTask };
@@ -114,6 +143,7 @@ const generateColumns = (() => {
 
       colName.textContent = col.label;
       btn.appendChild(createIcons("img-plus", "icon-sm"));
+      btn.setAttribute("aria-label", `Add task to ${col.label}`);
 
       btn.classList.add(
         "btn",
@@ -130,7 +160,7 @@ const generateColumns = (() => {
 
       column.setAttribute("class", "column");
       cardContainer.setAttribute("class", "card-container");
-      cardContainer.dataset.name = col.id; // Assign dataset directly at build time!
+      cardContainer.dataset.name = col.id;
 
       column.append(colHeader, cardContainer);
       boardContainer.appendChild(column);
@@ -159,6 +189,7 @@ const generateCard = (task) => {
 
   const cardActionBtn = document.createElement("button");
   cardActionBtn.setAttribute("aria-expanded", "false");
+  cardActionBtn.setAttribute("aria-label", "Task actions");
   cardActionBtn.classList.add(
     "btn",
     "secondary",
@@ -190,7 +221,6 @@ const generateCard = (task) => {
 
   metaDataDiv.append(prioritySpan, dueDateSpan);
 
-  // Set priority bar class once
   priorityBar.className = `priority-bar ${task.priority}`;
 
   title.textContent = task.title;
@@ -199,6 +229,23 @@ const generateCard = (task) => {
   cardBody.append(cardActionBtn, title, desc, priorityBar, metaDataDiv);
 
   return cardBody;
+};
+
+// Efficient single-card operations (no more full re-renders for simple actions)
+const insertSingleCard = (task) => {
+  const container = document.querySelector(
+    `.card-container[data-name="${task.stage}"]`,
+  );
+  if (container) {
+    container.appendChild(generateCard(task));
+  }
+};
+
+const removeSingleCard = (taskId) => {
+  const card = document.querySelector(`.card[data-id="${taskId}"]`);
+  if (card) {
+    card.remove();
+  }
 };
 
 // Badges Update
@@ -235,7 +282,7 @@ const updateBadges = () => {
   });
 };
 
-// Render Cards
+// Full re-render (only used for initial load now)
 const appendCard = () => {
   const tasksCreated = kanbanInit.getTasks();
   const cardContainers = document.querySelectorAll(".card-container");
@@ -256,24 +303,60 @@ const appendCard = () => {
   });
 };
 
-// Floating Menu Handler
+// Dropdown helpers
 let activeDropdown = null;
 
+const closeDropdown = () => {
+  if (activeDropdown) {
+    activeDropdown.remove();
+    activeDropdown = null;
+    document
+      .querySelectorAll(".action-btn[aria-expanded='true']")
+      .forEach((btn) => {
+        btn.setAttribute("aria-expanded", "false");
+      });
+  }
+};
+
 const actionDropDown = (button) => {
-  const options = ["Edit", "View Details", "Delete"];
   const dropDown = document.createElement("ul");
   dropDown.className = "dropdown-menu floating-dropdown";
 
   const card = button.closest(".card");
-  if (card) {
-    dropDown.dataset.cardId = card.dataset.id;
-  }
+  const cardId = card?.dataset.id;
 
-  options.forEach((option) => {
+  const createMenuItem = (iconID, label, onClick) => {
     const li = document.createElement("li");
-    li.textContent = option;
-    dropDown.appendChild(li);
-  });
+    const textSpan = document.createElement("span");
+    textSpan.textContent = label;
+    li.append(createIcons(iconID, "icon-sm"), textSpan);
+
+    li.style.cursor = "pointer";
+    li.addEventListener("click", (e) => {
+      e.stopPropagation();
+      onClick();
+      closeDropdown();
+    });
+    return li;
+  };
+
+  dropDown.append(
+    createMenuItem("img-edit-01", "Edit", () => {
+      console.log("Edit clicked for card:", cardId);
+      // TODO: Wire up edit modal
+    }),
+    createMenuItem("img-file-02", "View Details", () => {
+      console.log("View Details clicked for card:", cardId);
+      // TODO: Wire up detail view
+    }),
+    createMenuItem("img-trash-02", "Delete", () => {
+      if (cardId) {
+        kanbanInit.deleteTask(cardId);
+        removeSingleCard(cardId);
+        updateBadges();
+      }
+    }),
+  );
 
   const rect = button.getBoundingClientRect();
   dropDown.style.position = "fixed";
@@ -294,8 +377,7 @@ if (board) {
       const isExpanded = actionBtn.getAttribute("aria-expanded") === "true";
 
       if (activeDropdown) {
-        activeDropdown.remove();
-        activeDropdown = null;
+        closeDropdown();
       }
 
       if (!isExpanded) {
@@ -303,44 +385,22 @@ if (board) {
         const menu = actionDropDown(actionBtn);
         document.body.appendChild(menu);
         activeDropdown = menu;
-      } else {
-        actionBtn.setAttribute("aria-expanded", "false");
       }
     }
   });
 }
 
-// Global click handling for dropdown dismissal and menu actions
+// Close dropdown when clicking outside
 document.addEventListener("click", (e) => {
-  const menuItem = e.target.closest(".floating-dropdown li");
-
-  if (menuItem && activeDropdown) {
-    const action = menuItem.textContent.trim().toLowerCase();
-    const cardId = activeDropdown.dataset.cardId;
-
-    if (action === "delete" && cardId) {
-      kanbanInit.deleteTask(cardId);
-    }
-
-    activeDropdown.remove();
-    activeDropdown = null;
-
-    document
-      .querySelectorAll(".action-btn[aria-expanded='true']")
-      .forEach((btn) => {
-        btn.setAttribute("aria-expanded", "false");
-      });
-    return;
-  }
-
   if (!e.target.closest(".action-btn") && activeDropdown) {
-    activeDropdown.remove();
-    activeDropdown = null;
-    document
-      .querySelectorAll(".action-btn[aria-expanded='true']")
-      .forEach((btn) => {
-        btn.setAttribute("aria-expanded", "false");
-      });
+    closeDropdown();
+  }
+});
+
+// Close dropdown with Escape key
+document.addEventListener("keydown", (e) => {
+  if (e.key === "Escape" && activeDropdown) {
+    closeDropdown();
   }
 });
 

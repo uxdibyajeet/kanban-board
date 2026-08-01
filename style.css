@@ -261,13 +261,12 @@
   visibility: visible;
 }
 
-.card:hover .action-btn,
 .action-btn[aria-expanded="true"] {
   opacity: 1;
   visibility: visible;
-  /* Add active state styling */
-  background-color: var(--btn-active-bg, #e2e8f0); /* change this*/
-  color: var(--btn-active-color, #1e293b);
+  background-color: var(--color-blue-300);
+  color: var(--color-blue-700);
+  border: 1px solid var(--color-blue-500);
 }
 
 /* board */
@@ -502,15 +501,17 @@ input {
   gap: 1.5rem;
 }
 
-/* Drop down  change this*/
+/* Drop down */
 
 .floating-dropdown {
   list-style: none;
   margin: 0;
   padding: 0.5rem 0;
-  background-color: var(--surface-bg, #ffffff);
-  border: 1px solid var(--border-color, #e2e8f0);
+  background-color: var(--color-white);
+  border: 1px solid var(--color-slate-300);
   border-radius: 8px;
+
+  /* Edit this */
   box-shadow:
     0 10px 15px -3px rgba(0, 0, 0, 0.1),
     0 4px 6px -2px rgba(0, 0, 0, 0.05);
@@ -520,9 +521,19 @@ input {
 .floating-dropdown li {
   padding: 0.5rem 1rem;
   cursor: pointer;
-  font-size: 0.875rem;
+  font-size: var(--font-size-base);
+  line-height: var(--line-height-normal);
+  color: var(--color-slate-600);
+  font-weight: var(--font-weight-medium);
+
+  display: flex;
+  flex-direction: row;
+  gap: 0.35rem;
+  align-items: center;
 }
 
 .floating-dropdown li:hover {
-  background-color: var(--hover-bg, #f1f5f9);
+  background-color: var(--color-slate-100);
+  color: var(--color-blue-600);
+  font-weight: var(--font-weight-medium);
 }
